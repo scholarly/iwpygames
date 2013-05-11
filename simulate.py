@@ -5,6 +5,7 @@
 
 import random, sys, time, pygame
 from pygame.locals import *
+from res import load_sounds
 
 FPS = 30
 WINDOWWIDTH = 640
@@ -39,7 +40,7 @@ REDRECT    = pygame.Rect(XMARGIN, YMARGIN + BUTTONSIZE + BUTTONGAPSIZE, BUTTONSI
 GREENRECT  = pygame.Rect(XMARGIN + BUTTONSIZE + BUTTONGAPSIZE, YMARGIN + BUTTONSIZE + BUTTONGAPSIZE, BUTTONSIZE, BUTTONSIZE)
 
 def main():
-    global FPSCLOCK, DISPLAYSURF, BASICFONT, BEEP1, BEEP2, BEEP3, BEEP4
+    global FPSCLOCK, DISPLAYSURF, BASICFONT, BEEPS
 
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
@@ -52,10 +53,7 @@ def main():
     infoRect.topleft = (10, WINDOWHEIGHT - 25)
 
     # load the sound files
-    BEEP1 = pygame.mixer.Sound('beep1.ogg')
-    BEEP2 = pygame.mixer.Sound('beep2.ogg')
-    BEEP3 = pygame.mixer.Sound('beep3.ogg')
-    BEEP4 = pygame.mixer.Sound('beep4.ogg')
+    BEEPS = load_sounds("beep[0-9].ogg")
 
     # Initialize some variables for a new game
     pattern = [] # stores the pattern of colors
@@ -149,19 +147,19 @@ def checkForQuit():
 
 def flashButtonAnimation(color, animationSpeed=50):
     if color == YELLOW:
-        sound = BEEP1
+        sound = BEEPS[0]
         flashColor = BRIGHTYELLOW
         rectangle = YELLOWRECT
     elif color == BLUE:
-        sound = BEEP2
+        sound = BEEPS[1]
         flashColor = BRIGHTBLUE
         rectangle = BLUERECT
     elif color == RED:
-        sound = BEEP3
+        sound = BEEPS[2]
         flashColor = BRIGHTRED
         rectangle = REDRECT
     elif color == GREEN:
-        sound = BEEP4
+        sound = BEEPS[3]
         flashColor = BRIGHTGREEN
         rectangle = GREENRECT
 
@@ -214,10 +212,7 @@ def gameOverAnimation(color=WHITE, animationSpeed=50):
     origSurf = DISPLAYSURF.copy()
     flashSurf = pygame.Surface(DISPLAYSURF.get_size())
     flashSurf = flashSurf.convert_alpha()
-    BEEP1.play() # play all four beeps at the same time, roughly.
-    BEEP2.play()
-    BEEP3.play()
-    BEEP4.play()
+    (x.play() for x in BEEPS) # play all four beeps at the same time, roughly.
     r, g, b = color
     for i in range(3): # do the flash 3 times
         for start, end, step in ((0, 255, 1), (255, 0, -1)):
