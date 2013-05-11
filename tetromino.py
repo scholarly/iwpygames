@@ -5,6 +5,7 @@
 
 import random, time, pygame, sys
 from pygame.locals import *
+import res
 
 FPS = 25
 WINDOWWIDTH = 640
@@ -164,12 +165,12 @@ def main():
     BIGFONT = pygame.font.Font('freesansbold.ttf', 100)
     pygame.display.set_caption('Tetromino')
 
+    music = res.Music("tetris*.mid")
+
     showTextScreen('Tetromino')
     while True: # game loop
-        if random.randint(0, 1) == 0:
-            pygame.mixer.music.load('tetrisb.mid')
-        else:
-            pygame.mixer.music.load('tetrisc.mid')
+       
+	music.load()
         pygame.mixer.music.play(-1, 0.0)
         runGame()
         pygame.mixer.music.stop()

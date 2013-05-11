@@ -1,6 +1,7 @@
 import os
 import glob
 import pygame
+import random
 
 def dprint(arg):
     print arg
@@ -24,3 +25,12 @@ def scale_image(img,size):
     if img.get_size() != size:
         return pygame.transform.smoothscale(img,size)
     return img 
+
+
+class Music:
+    def __init__(self,pattern):
+       self.files = sorted(glob.glob(get_path(pattern)))
+
+    def load(self):
+       return pygame.mixer.music.load(random.choice(self.files))
+
