@@ -20,3 +20,7 @@ def load_image(rname):
 def load_images(pattern):
    return [pygame.image.load(x) for x in sorted(glob.glob(get_path(pattern)))]
 
+def scale_image(img,size):
+    if img.get_size() != size:
+        return pygame.transform.smoothscale(img,size)
+    return img 

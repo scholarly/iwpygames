@@ -17,7 +17,7 @@ with the following keys:
 
 import random, time, pygame, sys, copy
 from pygame.locals import *
-from res import load_sounds, load_sound,load_images
+from res import load_sounds, load_sound,load_images,scale_image
 
 FPS = 30 # frames per second to update the screen
 WINDOWWIDTH = 600  # width of the program's window, in pixels
@@ -26,10 +26,8 @@ WINDOWHEIGHT = 600 # height in pixels
 BOARDWIDTH = 8 # how many columns in the board
 BOARDHEIGHT = 8 # how many rows in the board
 GEMIMAGESIZE = 64 # width & height of each space in pixels
+GEMSIZE = (GEMIMAGESIZE,GEMIMAGESIZE)
 
-# NUMGEMIMAGES is the number of gem types. You will need .png image
-# files named gem0.png, gem1.png, etc. up to gem(N-1).png.
-NUMGEMIMAGES = 7
 
 
 MOVERATE = 25 # 1 to 100, larger num means faster animations
@@ -64,11 +62,6 @@ EMPTY_SPACE = -1 # an arbitrary, nonpositive value
 ROWABOVEBOARD = 'row above board' # an arbitrary, noninteger value
 
 
-def scale_image(img,size=(GEMIMAGESIZE,GEMIMAGESIZE)):
-    if img.get_size() != size:
-        return pygame.transform.smoothscale(img,size)
-    return img 
-
 def main():
     global FPSCLOCK, DISPLAYSURF, GEMIMAGES, GAMESOUNDS, BASICFONT, BOARDRECTS
 
@@ -80,7 +73,7 @@ def main():
     BASICFONT = pygame.font.Font('freesansbold.ttf', 36)
 
     # Load the images
-    GEMIMAGES = [scale_image(x) for x in load_images("gem[0-9].png")]
+    GEMIMAGES = [scale_image(x,GEMSIZE) for x in load_images("gem[0-9].png")]
     if len(GEMIMAGES)< 5: 
         raise AssertionError("game needs at least 5 types of gems to work, only %d were found"%len(GEMIMAGES))
 
