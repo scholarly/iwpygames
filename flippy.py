@@ -9,6 +9,7 @@
 
 import random, sys, pygame, time, copy
 from pygame.locals import *
+from res import load_image,scale_image
 
 FPS = 10 # frames per second to update the screen
 WINDOWWIDTH = 640 # width of the program's window, in pixels
@@ -52,14 +53,10 @@ def main():
     BIGFONT = pygame.font.Font('freesansbold.ttf', 32)
 
     # Set up the background image.
-    boardImage = pygame.image.load('flippyboard.png')
-    # Use smoothscale() to stretch the board image to fit the entire board:
-    boardImage = pygame.transform.smoothscale(boardImage, (BOARDWIDTH * SPACESIZE, BOARDHEIGHT * SPACESIZE))
+    boardImage = scale_image(load_image('flippyboard.png'),(BOARDWIDTH * SPACESIZE, BOARDHEIGHT * SPACESIZE))
     boardImageRect = boardImage.get_rect()
     boardImageRect.topleft = (XMARGIN, YMARGIN)
-    BGIMAGE = pygame.image.load('flippybackground.png')
-    # Use smoothscale() to stretch the background image to fit the entire window:
-    BGIMAGE = pygame.transform.smoothscale(BGIMAGE, (WINDOWWIDTH, WINDOWHEIGHT))
+    BGIMAGE = scale_image(load_image('flippybackground.png'),(WINDOWWIDTH, WINDOWHEIGHT))
     BGIMAGE.blit(boardImage, boardImageRect)
 
     # Run the main game.
