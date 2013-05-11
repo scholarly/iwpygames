@@ -5,6 +5,7 @@
 
 import random, copy, sys, pygame
 from pygame.locals import *
+from res import load_image,scale_image
 
 BOARDWIDTH = 7  # how many spaces wide the board is
 BOARDHEIGHT = 6 # how many spaces tall the board is
@@ -13,6 +14,7 @@ assert BOARDWIDTH >= 4 and BOARDHEIGHT >= 4, 'Board must be at least 4x4.'
 DIFFICULTY = 2 # how many moves to look ahead. (>2 is usually too much)
 
 SPACESIZE = 50 # size of the tokens and individual board spaces in pixels
+SPACESIZES = (SPACESIZE,SPACESIZE)
 
 FPS = 30 # frames per second to update the screen
 WINDOWWIDTH = 640 # width of the program's window, in pixels
@@ -46,20 +48,17 @@ def main():
 
     REDPILERECT = pygame.Rect(int(SPACESIZE / 2), WINDOWHEIGHT - int(3 * SPACESIZE / 2), SPACESIZE, SPACESIZE)
     BLACKPILERECT = pygame.Rect(WINDOWWIDTH - int(3 * SPACESIZE / 2), WINDOWHEIGHT - int(3 * SPACESIZE / 2), SPACESIZE, SPACESIZE)
-    REDTOKENIMG = pygame.image.load('4row_red.png')
-    REDTOKENIMG = pygame.transform.smoothscale(REDTOKENIMG, (SPACESIZE, SPACESIZE))
-    BLACKTOKENIMG = pygame.image.load('4row_black.png')
-    BLACKTOKENIMG = pygame.transform.smoothscale(BLACKTOKENIMG, (SPACESIZE, SPACESIZE))
-    BOARDIMG = pygame.image.load('4row_board.png')
-    BOARDIMG = pygame.transform.smoothscale(BOARDIMG, (SPACESIZE, SPACESIZE))
+    REDTOKENIMG = scale_image(load_image('4row_red.png'),SPACESIZES)
+    BLACKTOKENIMG = scale_image(load_image('4row_black.png'),SPACESIZES)
+    BOARDIMG = scale_image(load_image('4row_board.png'),SPACESIZES)
 
-    HUMANWINNERIMG = pygame.image.load('4row_humanwinner.png')
-    COMPUTERWINNERIMG = pygame.image.load('4row_computerwinner.png')
-    TIEWINNERIMG = pygame.image.load('4row_tie.png')
+    HUMANWINNERIMG = load_image('4row_humanwinner.png')
+    COMPUTERWINNERIMG = load_image('4row_computerwinner.png')
+    TIEWINNERIMG = load_image('4row_tie.png')
     WINNERRECT = HUMANWINNERIMG.get_rect()
     WINNERRECT.center = (int(WINDOWWIDTH / 2), int(WINDOWHEIGHT / 2))
 
-    ARROWIMG = pygame.image.load('4row_arrow.png')
+    ARROWIMG = load_image('4row_arrow.png')
     ARROWRECT = ARROWIMG.get_rect()
     ARROWRECT.left = REDPILERECT.right + 10
     ARROWRECT.centery = REDPILERECT.centery
