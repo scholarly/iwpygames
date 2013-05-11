@@ -17,6 +17,7 @@ with the following keys:
 
 import random, time, pygame, sys, copy
 from pygame.locals import *
+from res import load_sounds, load_sound,load_images
 
 FPS = 30 # frames per second to update the screen
 WINDOWWIDTH = 600  # width of the program's window, in pixels
@@ -29,11 +30,7 @@ GEMIMAGESIZE = 64 # width & height of each space in pixels
 # NUMGEMIMAGES is the number of gem types. You will need .png image
 # files named gem0.png, gem1.png, etc. up to gem(N-1).png.
 NUMGEMIMAGES = 7
-assert NUMGEMIMAGES >= 5 # game needs at least 5 types of gems to work
 
-# NUMMATCHSOUNDS is the number of different sounds to choose from when
-# a match is made. The .wav files are named match0.wav, match1.wav, etc.
-NUMMATCHSOUNDS = 6
 
 MOVERATE = 25 # 1 to 100, larger num means faster animations
 DEDUCTSPEED = 0.8 # reduces score by 1 point every DEDUCTSPEED seconds.
@@ -66,6 +63,12 @@ RIGHT = 'right'
 EMPTY_SPACE = -1 # an arbitrary, nonpositive value
 ROWABOVEBOARD = 'row above board' # an arbitrary, noninteger value
 
+
+def scale_image(img,size=(GEMIMAGESIZE,GEMIMAGESIZE)):
+    if img.get_size() != size:
+        return pygame.transform.smoothscale(img,size)
+    return img 
+
 def main():
     global FPSCLOCK, DISPLAYSURF, GEMIMAGES, GAMESOUNDS, BASICFONT, BOARDRECTS
 
@@ -77,19 +80,14 @@ def main():
     BASICFONT = pygame.font.Font('freesansbold.ttf', 36)
 
     # Load the images
-    GEMIMAGES = []
-    for i in range(1, NUMGEMIMAGES+1):
-        gemImage = pygame.image.load('gem%s.png' % i)
-        if gemImage.get_size() != (GEMIMAGESIZE, GEMIMAGESIZE):
-            gemImage = pygame.transform.smoothscale(gemImage, (GEMIMAGESIZE, GEMIMAGESIZE))
-        GEMIMAGES.append(gemImage)
+    GEMIMAGES = [scale_image(x) for x in load_images("gem[0-9].png")]
+    if len(GEMIMAGES)< 5: 
+        raise AssertionError("game needs at least 5 types of gems to work, only %d were found"%len(GEMIMAGES))
 
     # Load the sounds.
     GAMESOUNDS = {}
-    GAMESOUNDS['bad swap'] = pygame.mixer.Sound('badswap.wav')
-    GAMESOUNDS['match'] = []
-    for i in range(NUMMATCHSOUNDS):
-        GAMESOUNDS['match'].append(pygame.mixer.Sound('match%s.wav' % i))
+    GAMESOUNDS['bad swap'] = load_sound('badswap.wav')
+    GAMESOUNDS['match'] = load_sounds('match[0-9].wav')
 
     # Create pygame.Rect objects for each board space to
     # do board-coordinate-to-pixel-coordinate conversions.
