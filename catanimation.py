@@ -1,5 +1,6 @@
 import pygame, sys
 from pygame.locals import *
+from res import load_image
 
 pygame.init()
 
@@ -11,7 +12,7 @@ DISPLAYSURF = pygame.display.set_mode((400, 300), 0, 32)
 pygame.display.set_caption('Animation')
 
 WHITE = (255, 255, 255)
-catImg = pygame.image.load('cat.png')
+catImg = load_image('cat.png')
 catx = 10
 caty = 10
 direction = 'right'
