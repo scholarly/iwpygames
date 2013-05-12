@@ -5,6 +5,7 @@
 
 import random, sys, time, math, pygame
 from pygame.locals import *
+from res import load_images,load_image
 
 FPS = 30 # frames per second to update the screen
 WINWIDTH = 640 # width of the program's window, in pixels
@@ -65,17 +66,15 @@ def main():
 
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
-    pygame.display.set_icon(pygame.image.load('gameicon.png'))
+    pygame.display.set_icon(load_image('gameicon.png'))
     DISPLAYSURF = pygame.display.set_mode((WINWIDTH, WINHEIGHT))
     pygame.display.set_caption('Squirrel Eat Squirrel')
     BASICFONT = pygame.font.Font('freesansbold.ttf', 32)
 
     # load the image files
-    L_SQUIR_IMG = pygame.image.load('squirrel.png')
+    L_SQUIR_IMG = load_image('squirrel.png')
     R_SQUIR_IMG = pygame.transform.flip(L_SQUIR_IMG, True, False)
-    GRASSIMAGES = []
-    for i in range(1, 5):
-        GRASSIMAGES.append(pygame.image.load('grass%s.png' % i))
+    GRASSIMAGES = load_images("grass*.png")
 
     while True:
         runGame()
