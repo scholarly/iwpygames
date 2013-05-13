@@ -30,8 +30,8 @@ GEMSIZE = (GEMIMAGESIZE,GEMIMAGESIZE)
 
 
 
-MOVERATE = 25 # 1 to 100, larger num means faster animations
-DEDUCTSPEED = 0.8 # reduces score by 1 point every DEDUCTSPEED seconds.
+MOVERATE = 55 # 1 to 100, larger num means faster animations
+DEDUCTSPEED = 3.8 # reduces score by 1 point every DEDUCTSPEED seconds.
 
 #             R    G    B
 PURPLE    = (255,   0, 255)
@@ -211,7 +211,7 @@ def runGame():
                 # use the Surface object already in clickContinueTextSurf
                 clickContinueTextSurf = BASICFONT.render('Final Score: %s (Click to continue)' % (score), 1, GAMEOVERCOLOR, GAMEOVERBGCOLOR)
                 clickContinueTextRect = clickContinueTextSurf.get_rect()
-                clickContinueTextRect.center = int(WINDOWWIDTH / 2), int(WINDOWHEIGHT / 2)
+                clickContinueTextRect.center = int(WINDOWWIDTH / 2), int(clickContinueTextRect.height / 2)
             DISPLAYSURF.blit(clickContinueTextSurf, clickContinueTextRect)
         elif score > 0 and time.time() - lastScoreDeduction > DEDUCTSPEED:
             # score drops over time
