@@ -5,6 +5,7 @@
 
 import random, sys, copy, os, pygame
 from pygame.locals import *
+from res import load_image
 
 FPS = 30 # frames per second to update the screen
 WINWIDTH = 800 # width of the program's window, in pixels
@@ -51,25 +52,25 @@ def main():
     BASICFONT = pygame.font.Font('freesansbold.ttf', 18)
 
     # A global dict value that will contain all the Pygame
-    # Surface objects returned by pygame.image.load().
-    IMAGESDICT = {'uncovered goal': pygame.image.load('RedSelector.png'),
-                  'covered goal': pygame.image.load('Selector.png'),
-                  'star': pygame.image.load('Star.png'),
-                  'corner': pygame.image.load('Wall_Block_Tall.png'),
-                  'wall': pygame.image.load('Wood_Block_Tall.png'),
-                  'inside floor': pygame.image.load('Plain_Block.png'),
-                  'outside floor': pygame.image.load('Grass_Block.png'),
-                  'title': pygame.image.load('star_title.png'),
-                  'solved': pygame.image.load('star_solved.png'),
-                  'princess': pygame.image.load('princess.png'),
-                  'boy': pygame.image.load('boy.png'),
-                  'catgirl': pygame.image.load('catgirl.png'),
-                  'horngirl': pygame.image.load('horngirl.png'),
-                  'pinkgirl': pygame.image.load('pinkgirl.png'),
-                  'rock': pygame.image.load('Rock.png'),
-                  'short tree': pygame.image.load('Tree_Short.png'),
-                  'tall tree': pygame.image.load('Tree_Tall.png'),
-                  'ugly tree': pygame.image.load('Tree_Ugly.png')}
+    # Surface objects returned by load_image().
+    IMAGESDICT = {'uncovered goal': load_image('RedSelector.png'),
+                  'covered goal': load_image('Selector.png'),
+                  'star': load_image('Star.png'),
+                  'corner': load_image('Wall_Block_Tall.png'),
+                  'wall': load_image('Wood_Block_Tall.png'),
+                  'inside floor': load_image('Plain_Block.png'),
+                  'outside floor': load_image('Grass_Block.png'),
+                  'title': load_image('star_title.png'),
+                  'solved': load_image('star_solved.png'),
+                  'princess': load_image('princess.png'),
+                  'boy': load_image('boy.png'),
+                  'catgirl': load_image('catgirl.png'),
+                  'horngirl': load_image('horngirl.png'),
+                  'pinkgirl': load_image('pinkgirl.png'),
+                  'rock': load_image('Rock.png'),
+                  'short tree': load_image('Tree_Short.png'),
+                  'tall tree': load_image('Tree_Tall.png'),
+                  'ugly tree': load_image('Tree_Ugly.png')}
 
     # These dict values are global, and map the character that appears
     # in the level file to the Surface object it represents.
@@ -425,88 +426,86 @@ def startScreen():
 
 def readLevelsFile(filename):
     assert os.path.exists(filename), 'Cannot find the level file: %s' % (filename)
-    mapFile = open(filename, 'r')
-    # Each level must end with a blank line
-    content = mapFile.readlines() + ['\r\n']
-    mapFile.close()
 
     levels = [] # Will contain a list of level objects.
     levelNum = 0
     mapTextLines = [] # contains the lines for a single level's map.
     mapObj = [] # the map object made from the data in mapTextLines
-    for lineNum in range(len(content)):
-        # Process each line that was in the level file.
-        line = content[lineNum].rstrip('\r\n')
+    lineNum = 0
 
-        if ';' in line:
-            # Ignore the ; lines, they're comments in the level file.
-            line = line[:line.find(';')]
+    with open(filename,"rUt") as mapFile:
+        for line in mapFile:
+            lineNum+=1 # XXX only needed for error reporting
+            line = line.rstrip("\n")
+            if ';' in line:
+                # Ignore the ; lines, they're comments in the level file.
+                line = line[:line.find(';')]
 
-        if line != '':
-            # This line is part of the map.
-            mapTextLines.append(line)
-        elif line == '' and len(mapTextLines) > 0:
-            # A blank line indicates the end of a level's map in the file.
-            # Convert the text in mapTextLines into a level object.
+            if line != '':
+                # This line is part of the map.
+                mapTextLines.append(line)
+            elif line == '' and len(mapTextLines) > 0:
+                # A blank line indicates the end of a level's map in the file.
+                # Convert the text in mapTextLines into a level object.
 
-            # Find the longest row in the map.
-            maxWidth = -1
-            for i in range(len(mapTextLines)):
-                if len(mapTextLines[i]) > maxWidth:
-                    maxWidth = len(mapTextLines[i])
-            # Add spaces to the ends of the shorter rows. This
-            # ensures the map will be rectangular.
-            for i in range(len(mapTextLines)):
-                mapTextLines[i] += ' ' * (maxWidth - len(mapTextLines[i]))
+                # Find the longest row in the map.
+                maxWidth = -1
+                for i in range(len(mapTextLines)):
+                    if len(mapTextLines[i]) > maxWidth:
+                        maxWidth = len(mapTextLines[i])
+                # Add spaces to the ends of the shorter rows. This
+                # ensures the map will be rectangular.
+                for i in range(len(mapTextLines)):
+                    mapTextLines[i] += ' ' * (maxWidth - len(mapTextLines[i]))
 
-            # Convert mapTextLines to a map object.
-            for x in range(len(mapTextLines[0])):
-                mapObj.append([])
-            for y in range(len(mapTextLines)):
+                # Convert mapTextLines to a map object.
+                for x in range(len(mapTextLines[0])):
+                    mapObj.append([])
+                for y in range(len(mapTextLines)):
+                    for x in range(maxWidth):
+                        mapObj[x].append(mapTextLines[y][x])
+
+                # Loop through the spaces in the map and find the @, ., and $
+                # characters for the starting game state.
+                startx = None # The x and y for the player's starting position
+                starty = None
+                goals = [] # list of (x, y) tuples for each goal.
+                stars = [] # list of (x, y) for each star's starting position.
                 for x in range(maxWidth):
-                    mapObj[x].append(mapTextLines[y][x])
+                    for y in range(len(mapObj[x])):
+                        if mapObj[x][y] in ('@', '+'):
+                            # '@' is player, '+' is player & goal
+                            startx = x
+                            starty = y
+                        if mapObj[x][y] in ('.', '+', '*'):
+                            # '.' is goal, '*' is star & goal
+                            goals.append((x, y))
+                        if mapObj[x][y] in ('$', '*'):
+                            # '$' is star
+                            stars.append((x, y))
 
-            # Loop through the spaces in the map and find the @, ., and $
-            # characters for the starting game state.
-            startx = None # The x and y for the player's starting position
-            starty = None
-            goals = [] # list of (x, y) tuples for each goal.
-            stars = [] # list of (x, y) for each star's starting position.
-            for x in range(maxWidth):
-                for y in range(len(mapObj[x])):
-                    if mapObj[x][y] in ('@', '+'):
-                        # '@' is player, '+' is player & goal
-                        startx = x
-                        starty = y
-                    if mapObj[x][y] in ('.', '+', '*'):
-                        # '.' is goal, '*' is star & goal
-                        goals.append((x, y))
-                    if mapObj[x][y] in ('$', '*'):
-                        # '$' is star
-                        stars.append((x, y))
+                # Basic level design sanity checks:
+                assert startx != None and starty != None, 'Level %s (around line %s) in %s is missing a "@" or "+" to mark the start point.' % (levelNum+1, lineNum, filename)
+                assert len(goals) > 0, 'Level %s (around line %s) in %s must have at least one goal.' % (levelNum+1, lineNum, filename)
+                assert len(stars) >= len(goals), 'Level %s (around line %s) in %s is impossible to solve. It has %s goals but only %s stars.' % (levelNum+1, lineNum, filename, len(goals), len(stars))
 
-            # Basic level design sanity checks:
-            assert startx != None and starty != None, 'Level %s (around line %s) in %s is missing a "@" or "+" to mark the start point.' % (levelNum+1, lineNum, filename)
-            assert len(goals) > 0, 'Level %s (around line %s) in %s must have at least one goal.' % (levelNum+1, lineNum, filename)
-            assert len(stars) >= len(goals), 'Level %s (around line %s) in %s is impossible to solve. It has %s goals but only %s stars.' % (levelNum+1, lineNum, filename, len(goals), len(stars))
+                # Create level object and starting game state object.
+                gameStateObj = {'player': (startx, starty),
+                                'stepCounter': 0,
+                                'stars': stars}
+                levelObj = {'width': maxWidth,
+                            'height': len(mapObj),
+                            'mapObj': mapObj,
+                            'goals': goals,
+                            'startState': gameStateObj}
 
-            # Create level object and starting game state object.
-            gameStateObj = {'player': (startx, starty),
-                            'stepCounter': 0,
-                            'stars': stars}
-            levelObj = {'width': maxWidth,
-                        'height': len(mapObj),
-                        'mapObj': mapObj,
-                        'goals': goals,
-                        'startState': gameStateObj}
+                levels.append(levelObj)
 
-            levels.append(levelObj)
-
-            # Reset the variables for reading the next map.
-            mapTextLines = []
-            mapObj = []
-            gameStateObj = {}
-            levelNum += 1
+                # Reset the variables for reading the next map.
+                mapTextLines = []
+                mapObj = []
+                gameStateObj = {}
+                levelNum += 1
     return levels
 
 

@@ -5,6 +5,7 @@
 
 import random, sys, webbrowser, copy, pygame
 from pygame.locals import *
+from res import load_image
 
 # There are different box sizes, number of boxes, and
 # life depending on the "board size" setting selected.
@@ -67,11 +68,11 @@ def main():
     DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
 
     # Load images
-    LOGOIMAGE = pygame.image.load('inkspilllogo.png')
-    SPOTIMAGE = pygame.image.load('inkspillspot.png')
-    SETTINGSIMAGE = pygame.image.load('inkspillsettings.png')
-    SETTINGSBUTTONIMAGE = pygame.image.load('inkspillsettingsbutton.png')
-    RESETBUTTONIMAGE = pygame.image.load('inkspillresetbutton.png')
+    LOGOIMAGE = load_image('inkspilllogo.png')
+    SPOTIMAGE = load_image('inkspillspot.png')
+    SETTINGSIMAGE = load_image('inkspillsettings.png')
+    SETTINGSBUTTONIMAGE = load_image('inkspillsettingsbutton.png')
+    RESETBUTTONIMAGE = load_image('inkspillresetbutton.png')
 
     pygame.display.set_caption('Ink Spill')
     mousex = 0
